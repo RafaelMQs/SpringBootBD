@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 import br.com.trabalhoBd.beans.Usuario;
 import br.com.trabalhoBd.dao.UsuarioDAO;
@@ -31,17 +30,24 @@ public class UsuarioController {
 	}
 	
 	@GetMapping("/usuarios/{userId}")
-	public ResponseEntity<Optional<Usuario>> getAllById(@PathVariable("userId") int id){
-		Optional<Usuario> listId = dao.findById(id);
+	public ResponseEntity<Usuario> getAllById(@PathVariable("userId") int id){
+		Usuario listId = dao.findById(id).orElse(null);
 		
-		if(listId.isEmpty()) { return ResponseEntity.status(404).build(); }
+		if(listId == null) { return ResponseEntity.status(404).build(); }
 		
 		return ResponseEntity.ok(listId);
 	}
 	
 	@PostMapping("/usuarios/add/")
-	public Usuario getSave(@RequestBody Usuario usuario) {
-		return dao.save(usuario);
+	public ResponseEntity<Usuario> getSave(@RequestBody Usuario usuario) {
+		try {
+			dao.save(usuario);
+			return ResponseEntity.ok(usuario);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(404).build();
+		}
 	}
 	
 }
