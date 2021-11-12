@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,6 +19,12 @@ public class UsuarioController {
 	
 	@Autowired
 	private UsuarioDAO dao;
+	
+	@RequestMapping("/index")
+	public String index() {
+		return "index";
+	}
+	
 	
 	@GetMapping("/usuarios")
 	public ResponseEntity<List<Usuario>> getAll(){
@@ -49,5 +56,13 @@ public class UsuarioController {
 			return ResponseEntity.status(404).build();
 		}
 	}
+	
+	@PostMapping("/login")
+	public ResponseEntity<Usuario> getAllByEmailAndSenha(@RequestBody Usuario usuario){
+		Usuario resposta = dao.findByEmailAndSenha(usuario.getEmail(), usuario.getSenha());
+		
+		if(resposta == null) { return ResponseEntity.status(404).build();}
+		return ResponseEntity.ok(resposta);
+		}
 	
 }
